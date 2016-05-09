@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+    <html>
+        <head>
+            <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.5/angular.min.js"></script>
+        </head>
+        <body>
+            <div>
+                <h1>
+                    Weather Today
+                </h1>
+            </div>
+            <div ng-app="weather" ng-controller="ctrl">
+                <div>
+                    <h2>Radar</h2>
+                        <input type="text" ng-model = "urlParts.zip" maxlength=6>
+                        <button ng-click="loadWeather()">Get Weather</button>
+                        <br>
+                        <img src={{zipurl}} alt="radar image">
+                </div>
+                <div>
+                    <h2>Weather</h2>
+                    <p>Time of Observation: {{reportTime}}</p>
+                    <p>Temperature: {{temp}}</p>
+                    <p>Feels Like: {{feels}}</p>
+                    <p>Relative Humidity: {{rh}}</p>
+                    <p>Dew Point: {{dewpt}}</p>
+                    <p>Wind: {{wind}}</p>
+                    <p>Weather Conditions: {{conditions}}</p>
+                    <p>Visibility: {{vis}}</p>
+                    <p>1-Hour Precipitation: {{hrPrecip}}</p>
+                </div>
+            </div>
+            
+            <script>
+                var app = angular.module('weather', []);
+                app.controller("ctrl", function($scope, $http) {
+                    $scope.loadWeather = function() {
+                        $scope.urlRadar1 = "http://api.wunderground.com/api/8296f5d2f2f49f45/radar/satellite/q/";
+                        $scope.urlRadar3 = ".png";
+                        $scope.zipurl = $scope.urlRadar1 + $scope.urlParts.zip + $scope.urlRadar3;
+                        
+                        $scope.urlCurWeather1 = "http://api.wunderground.com/api/8296f5d2f2f49f45/geolookup/conditions/q/";
+                        $scope.urlCurWeather3 = ".json";
+                        $scope.urlW = $scope.urlCurWeather1 + $scope.urlParts.zip + $scope.urlCurWeather3;
+                        $http.get($scope.urlW).then(function successCallback(response){
+                            obj = response.data;
+                            $scope.reportTime = obj.current_observation.observation_time;
+                            $scope.temp = obj.current_observation.temperature_string;
+                            $scope.feels = obj.current_observation.feelslike_string;
+                            $scope.rh = obj.current_observation.relative_humidity;
+                            $scope.dewpt = obj.current_observation.dewpoint_string;
+                            $scope.wind = obj.current_observation.wind_string;
+                            $scope.conditions = obj.current_observation.weather;
+                            $scope.vis = obj.current_observation.visibility_mi;
+                            $scope.hrPrecip = obj.current_observation.precip_1hr_string;
+                        });
+                        
+                        
+                    };
+                });
+            </script>
+        </body>
+    </html>
